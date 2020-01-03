@@ -36,6 +36,7 @@ filter(vaz2022, Posto == 2) %>% mutate(VazMontTV1 = lag(VazaoMont1, 5))
 
 # Lag diferente por posto.
 # Falta fazer: Para outros montantes (2 a 6). Deixar como função. Retirar coluna TempViagem1 do tibble de vazões.
+
 temp1 <- NULL
 for (p in unique(Testevaz2022$Posto)){
   temp <- mutate(filter(Testevaz2022, Posto == p), VazaoMontTV1 = lag(VazaoMont1, filter(TempoViagem1, Posto == p)[[2]]))
