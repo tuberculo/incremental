@@ -7,7 +7,40 @@ cascata_PDE_2022 <- read_delim("cascata - PDE 2022.csv", ";", escape_double = FA
 ArquivoVazoes2022 <- "vazao-pde2022.txt" # Arquivo vazões no formato Newave
 ArquivoVazoes2029 <- "vazoes2029.txt"
 
-CalcIncr <- function(ArquivoVazoes, Cascata){
+#Cria coluna com datas
+Vazoes2022 <- mutate(unite(Vazoes2022, Ano, Mês, col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
+
+PreparaTabelaCascata <- function(CascataEntrada) {
+  cascataLonga <- pivot_longer(CascataEntrada, cols = c(`Posto montante 1`, `Posto montante 2`, `Posto montante 3`, `Posto montante 4`, `Posto montante 5`,`Posto montante 6`), values_to = "PostoMontante")
+  cascataLonga$PostoMontante <- parse_integer(gsub(999, NA, cascataLonga$PostoMontante))
+  cascataLonga <- drop_na(cascataLonga)
+  cascataLonga
+}
+
+CalcIncr <- function(Vazoes, Cascata) {
+  #  Vazões à montante de cada posto, por posto à montante.
+  VazMontante <- left_join(Cascata, Vazoes, by = c("PostoMontante" = "Posto")) %>% 
+    select(Data, num, nome, posto, PostoMontante, VazãoMontante = Vazão)
+  # Total das vazões à montante de cada posto
+  VazMontporPosto <- group_by(drop_na(left_join(Vazoes, VazMontante, by = 
+    c("Data" = "Data", "Posto" = "posto"))), Data, Posto) %>% 
+    summarise(VazMontTotal = sum(VazãoMontante))
+  #  Junta o valor total à montante com a tabela de vazões do posto.
+  Vazoes <- replace_na(left_join(Vazoes, VazMontporPosto), list(VazMontTotal = 0))
+  # Calcula incremental.
+  Vazoes <- mutate(Vazoes, VazIncr = Vazão - VazMontTotal)
+  Vazoes
+}
+
+# Formato do vazões.dat
+select(mutate(VazDiaria, Mes = month(Data), Ano = year(Data)), Ano, Mes, Posto, VazIncr) %>% 
+  pivot_wider(names_from = Mes, values_from = VazIncr, values_fn = list(VazIncr = sum))
+
+
+
+
+
+CalcIncr_velho <- function(ArquivoVazoes, Cascata){
   Vazoes <- read_fwf(ArquivoVazoes, fwf_empty(ArquivoVazoes, col_names = c("Posto", "Ano", 1:12), n = 10000L), col_types = cols(.default = "d"))
   Vazoes <- pivot_longer(Vazoes, cols = c(-Posto, -Ano), names_to = "Mes", values_to = "Vazao")
   VazJoin <- left_join(Vazoes, Cascata, by = c("Posto" = "posto"))
