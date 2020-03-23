@@ -1,11 +1,3 @@
-library(tidyverse)
-cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
-
-cascata_PDE_2022 <- read_delim("cascata - PDE 2022.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
-
-#Vazoes2022 <- read_fwf("vazao-pde2022.txt", fwf_empty("vazao-pde2022.txt", col_names = c("Posto", "Ano", "janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro")), col_types = cols(.default = "d"))
-ArquivoVazoes2022 <- "vazao-pde2022.txt" # Arquivo vazões no formato Newave
-ArquivoVazoes2029 <- "vazoes2029.txt"
 
 #Cria coluna com datas
 Vazoes2022 <- mutate(unite(Vazoes2022, Ano, Mês, col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
@@ -20,7 +12,7 @@ PreparaTabelaCascata <- function(CascataEntrada) {
 CalcIncr <- function(Vazoes, Cascata) {
   #  Vazões à montante de cada posto, por posto à montante.
   VazMontante <- left_join(Cascata, Vazoes, by = c("PostoMontante" = "Posto")) %>% 
-    select(Data, num, nome, posto, PostoMontante, VazãoMontante = Vazão)
+    select(Data, num, nome, posto, PostoMontante, VazãoMontante = Vazao)
   # Total das vazões à montante de cada posto
   VazMontporPosto <- group_by(drop_na(left_join(Vazoes, VazMontante, by = 
     c("Data" = "Data", "Posto" = "posto"))), Data, Posto) %>% 
@@ -28,14 +20,13 @@ CalcIncr <- function(Vazoes, Cascata) {
   #  Junta o valor total à montante com a tabela de vazões do posto.
   Vazoes <- replace_na(left_join(Vazoes, VazMontporPosto), list(VazMontTotal = 0))
   # Calcula incremental.
-  Vazoes <- mutate(Vazoes, VazIncr = Vazão - VazMontTotal)
+  Vazoes <- mutate(Vazoes, VazIncr = Vazao - VazMontTotal)
   Vazoes
 }
 
 # Formato do vazões.dat
 select(mutate(VazDiaria, Mes = month(Data), Ano = year(Data)), Ano, Mes, Posto, VazIncr) %>% 
   pivot_wider(names_from = Mes, values_from = VazIncr, values_fn = list(VazIncr = sum))
-
 
 
 
