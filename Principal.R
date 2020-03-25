@@ -25,6 +25,8 @@ casc2022longa <- PreparaTabelaCascata(cascata_PDE_2022)
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
 casc2029longa <- casc2029longa[grep("FIC", casc2029longa$nome, invert = TRUE),] # Remove as fictícias
 
+casc2029longa <- mutate(casc2029longa, TempViag = 3) # Preencher certo depois
+
 # Calcula incremental
 Vaz2022MensalIncr <- CalcIncr(Vazoes2022Mensal, casc2022longa)
 Vaz2029MensalIncr <- CalcIncr(Vazoes2029Mensal, casc2029longa)
