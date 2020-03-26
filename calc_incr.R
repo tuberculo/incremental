@@ -19,13 +19,16 @@ CalcIncr <- function(Vazoes, Cascata) {
   ## Cria lag de vazão montante
   VazMontporPosto <- group_by(drop_na(left_join(Vazoes, VazMontante, by = 
     c("Data" = "Data", "Posto" = "posto"))), Posto, PostoMontante) %>% 
-    arrange(Posto, PostoMontante, Data) %>% mutate(VazMontLag = lag(VazãoMontante, default = 0)) %>% ungroup()
-  # Faz o cálculo proporcional
+    arrange(Posto, PostoMontante, Data) %>% 
+    mutate(VazMontLag = lag(VazãoMontante, n = (TempViag[1] %/% 24 + 1), default = 0), 
+           VazMontLagDiaSeg = lag(VazãoMontante, n = (TempViag[1] %/% 24), default = 0)) %>% 
+    ungroup()
+  # Faz o cálculo proporcional à quantidade de horas do dia que inicai o tempo de viagem mais o dia seguinte.
   VazMontporPosto <- group_by(VazMontporPosto, Data, Posto) %>% 
-    mutate(VazMontcomTV = (((24 - TempViag) * VazãoMontante + TempViag * VazMontLag) / 24)) %>% 
+    mutate(VazMontcomTV = (((24 - TempViag %% 24) * VazMontLagDiaSeg + (TempViag %% 24) * VazMontLag) / 24)) %>% 
     summarise(VazMontTotal = sum(VazãoMontante), VazMontTotalcomTV = sum(VazMontcomTV))
   #  Junta o valor total à montante com a tabela de vazões do posto.
-  Vazoes <- replace_na(left_join(Vazoes, VazMontporPosto), list(VazMontTotal = 0))
+  Vazoes <- replace_na(left_join(Vazoes, VazMontporPosto), list(VazMontTotal = 0, VazMontTotalcomTV = 0))
   # Calcula incremental.
   Vazoes <- mutate(Vazoes, VazIncr = Vazao - VazMontTotal, VazIncrcomTV = Vazao - VazMontTotalcomTV)
   Vazoes
