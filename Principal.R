@@ -1,4 +1,5 @@
-library(tidyverse)
+source("calc_incr.R")
+source("importa vazões.R")
 
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
