@@ -8,6 +8,10 @@ cascata_PDE_2022 <- read_delim("cascata - PDE 2022.csv", ";", escape_double = FA
 ArquivoVazoes2022 <- "vazao-pde2022.txt" # Arquivo vazões no formato Newave
 ArquivoVazoes2029 <- "vazoes2029.txt"
 
+#  Tempo de viagem
+TempoViagem <- read_fwf("tempo de viagem.txt", fwf_widths(c(6, 3, 4, 3, 6, 3), col_names = c("cod", "Montante", "Jusante", "tp", "TempViag", "tpTVIAG")), skip = 2)
+TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
+
 # Carrega vazões do arquivo Newave
 Vazoes2022Mensal <- read_fwf(ArquivoVazoes2022, fwf_empty(ArquivoVazoes2022, 
   col_names = c("Posto", "Ano", 1:12), n = 10000L), col_types = cols(.default = "d"))
@@ -26,7 +30,11 @@ casc2022longa <- PreparaTabelaCascata(cascata_PDE_2022)
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
 casc2029longa <- casc2029longa[grep("FIC", casc2029longa$nome, invert = TRUE),] # Remove as fictícias
 
-casc2029longa <- mutate(casc2029longa, TempViag = 3) # Preencher certo depois
+# Adiciona informação do tempo de viagem na tabela de cascata
+casc2029longa <- left_join(casc2029longa, TempoViagem, by = c("PostoMontante" = "Montante", "posto" = "Jusante"))
+# Substitui NA por 0 quando não há informação do tempo de viagem.
+casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
+#  casc2029longa <- mutate(casc2029longa, TempViag = 3) # Preencher certo depois
 
 # Calcula incremental
 Vaz2022MensalIncr <- CalcIncr(Vazoes2022Mensal, casc2022longa)
