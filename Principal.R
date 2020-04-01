@@ -16,7 +16,6 @@ TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
 # Altera a tabela de cascata para o formato longo
 #casc2022longa <- PreparaTabelaCascata(cascata_PDE_2022)
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
-casc2029longa <- casc2029longa[grep("FIC", casc2029longa$nome, invert = TRUE),] # Remove as fictícias
 
 # Cálculo com vazões mensais -----------------------------------------------
   #ArquivoVazoes2022 <- "vazao-pde2022.txt" # Arquivo vazões no formato Newave
@@ -49,7 +48,7 @@ casc2029longa <- casc2029longa[grep("FIC", casc2029longa$nome, invert = TRUE),] 
 # Cálculo com vazões diárias ----------------------------------------------
 
 # Adiciona informação do tempo de viagem na tabela de cascata
-casc2029longa <- left_join(casc2029longa, TempoViagem, by = c("PostoMontante" = "Montante", "posto" = "Jusante"))
+casc2029longa <- left_join(casc2029longa, TempoViagem, by = c("UsinaMontante" = "Montante", "num" = "Jusante"))
 # Substitui NA por 0 quando não há informação do tempo de viagem.
 casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
 #  casc2029longa <- mutate(casc2029longa, TempViag = 3) # Preencher certo depois
@@ -58,4 +57,4 @@ Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
 write_csv(Vaz2029DiariaIncr, "VazIncr2029porDia.csv")
 
-ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "green") + geom_line(aes(x = Data, y = Vazao))
+ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")

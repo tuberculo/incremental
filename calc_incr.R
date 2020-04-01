@@ -1,8 +1,10 @@
 
 PreparaTabelaCascata <- function(CascataEntrada) {
   cascataLonga <- pivot_longer(CascataEntrada, cols = c(`Posto montante 1`, `Posto montante 2`, `Posto montante 3`, `Posto montante 4`, `Posto montante 5`,`Posto montante 6`), values_to = "PostoMontante")
-  cascataLonga$PostoMontante <- parse_integer(gsub(999, NA, cascataLonga$PostoMontante))
-  cascataLonga <- drop_na(cascataLonga)
+#  cascataLonga$PostoMontante <- parse_integer(gsub(999, NA, cascataLonga$PostoMontante))
+#  cascataLonga <- drop_na(cascataLonga)
+  cascataLonga <- cascataLonga[grep("FIC", cascataLonga$nome, invert = TRUE),] # Remove as fictícias
+  cascataLonga <- distinct(inner_join(cascataLonga, select(cascataLonga, UsinaMontante = num, posto), by = c("PostoMontante" = "posto"))) # Inclui o número da usina referente ao posto a montante.
   cascataLonga
 }
 
