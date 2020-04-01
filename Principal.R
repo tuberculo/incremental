@@ -51,3 +51,5 @@ write_csv(Vaz2029MensalIncrTabela, "VazIncr2029porMes.csv")
 Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
 write_csv(Vaz2029DiariaIncr, "VazIncr2029porDia.csv")
+
+ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "green") + geom_line(aes(x = Data, y = Vazao))
