@@ -4,8 +4,8 @@ library(readxl)
 
 CodUsinasExp <- read_csv2("código usinas expansão.csv")
 
-VazDiariaExist <- read_xlsx("../Vazões_Diárias_1982_ONS+Exp.xlsx", 1)
-VazDiariaNovas <- read_xlsx("../Vazões_Diárias_1982_ONS+Exp.xlsx", 2)
+VazDiariaExist <- read_xlsx("../Vazões_Diárias_1982_ONS+Exp_r01.xlsx", 1)
+VazDiariaNovas <- read_xlsx("../Vazões_Diárias_1982_ONS+Exp_r01.xlsx", 2)
 VazDiariaExist$Data <- parse_date_time(VazDiariaExist$Data, "dmY")
 
 VazDiariaExist <- pivot_longer(VazDiariaExist, cols = -Data, names_to = "Usina", values_to = "Vazao")
