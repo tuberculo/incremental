@@ -10,12 +10,19 @@ cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FA
 
 
 #  Tempo de viagem
+# Do arquivo texto:
 TempoViagem <- read_fwf("tempo de viagem.txt", fwf_widths(c(6, 3, 4, 3, 6, 3), col_names = c("cod", "Montante", "Jusante", "tp", "TempViag", "tpTVIAG")), skip = 2)
+# Da planilha:
+TempoViagem <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 1, col_types = c("numeric", "text", "numeric", "text", "skip", "skip", "numeric", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip"), col_names = c("Montante", "NomeMontante", "Jusante", "NomeJusante", "TempViag"), skip = 4)
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
+
+NomesPlexos <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 2)
 
 # Altera a tabela de cascata para o formato longo
 #casc2022longa <- PreparaTabelaCascata(cascata_PDE_2022)
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
+#  Inclui nome do reservatório usado no Plexos
+casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by = c("num" = "Num PDE")), NomePlexos = Reservatório)
 
 # Cálculo com vazões mensais -----------------------------------------------
   #ArquivoVazoes2022 <- "vazao-pde2022.txt" # Arquivo vazões no formato Newave
@@ -58,3 +65,9 @@ Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
 write_csv(Vaz2029DiariaIncr, "VazIncr2029porDia.csv")
 
 ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")
+
+group_by(Vaz2029DiariaIncr, Nome) %>% summarise(n(), min(VazIncrcomTV), max(VazIncrcomTV), qneg = sum(VazIncrcomTV < 0), prop = min(VazIncrcomTV) / max(VazIncrcomTV)) %>% arrange(prop) %>% print(n = 200)
+
+
+left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% filter(VazMontTotal != 0) %>% distinct(Nome)
+left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)

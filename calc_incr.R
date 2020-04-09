@@ -4,7 +4,9 @@ PreparaTabelaCascata <- function(CascataEntrada) {
 #  cascataLonga$PostoMontante <- parse_integer(gsub(999, NA, cascataLonga$PostoMontante))
 #  cascataLonga <- drop_na(cascataLonga)
   cascataLonga <- cascataLonga[grep("FIC", cascataLonga$nome, invert = TRUE),] # Remove as fictícias
-  cascataLonga <- distinct(inner_join(cascataLonga, select(cascataLonga, UsinaMontante = num, posto), by = c("PostoMontante" = "posto"))) # Inclui o número da usina referente ao posto a montante.
+  cascataLonga <- distinct(left_join(cascataLonga, select(cascataLonga, UsinaMontante = num, posto), by = c("PostoMontante" = "posto"))) # Inclui o número da usina referente ao posto a montante.
+  cascataLonga[cascataLonga$name == "Posto montante 1" & is.na(cascataLonga$UsinaMontante),]$UsinaMontante <- 999
+  cascataLonga <- drop_na(cascataLonga)
   cascataLonga
 }
 
@@ -22,7 +24,7 @@ CalcIncr <- function(Vazoes, Cascata) {
     mutate(VazMontLag = lag(VazãoMontante, n = (TempViag[1] %/% 24 + 1), default = 0), 
            VazMontLagDiaSeg = lag(VazãoMontante, n = (TempViag[1] %/% 24), default = 0)) %>% 
     ungroup()
-  # Faz o cálculo proporcional à quantidade de horas do dia que inicai o tempo de viagem mais o dia seguinte.
+  # Faz o cálculo proporcional à quantidade de horas do dia que inicia o tempo de viagem mais o dia seguinte.
   VazMontporPosto <- group_by(VazMontporPosto, Data, Posto) %>% 
     mutate(VazMontcomTV = (((24 - TempViag %% 24) * VazMontLagDiaSeg + (TempViag %% 24) * VazMontLag) / 24)) %>% 
     summarise(VazMontTotal = sum(VazãoMontante), VazMontTotalcomTV = sum(VazMontcomTV))
