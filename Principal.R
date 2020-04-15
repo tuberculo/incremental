@@ -11,7 +11,7 @@ cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FA
 
 #  Tempo de viagem
 # Do arquivo texto:
-TempoViagem <- read_fwf("tempo de viagem.txt", fwf_widths(c(6, 3, 4, 3, 6, 3), col_names = c("cod", "Montante", "Jusante", "tp", "TempViag", "tpTVIAG")), skip = 2)
+#TempoViagem <- read_fwf("tempo de viagem.txt", fwf_widths(c(6, 3, 4, 3, 6, 3), col_names = c("cod", "Montante", "Jusante", "tp", "TempViag", "tpTVIAG")), skip = 2)
 # Da planilha:
 TempoViagem <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 1, col_types = c("numeric", "text", "numeric", "text", "skip", "skip", "numeric", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip"), col_names = c("Montante", "NomeMontante", "Jusante", "NomeJusante", "TempViag"), skip = 4)
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
@@ -39,6 +39,7 @@ casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by
   
   Vazoes2029Mensal <- pivot_longer(Vazoes2029Mensal, cols = c(-Posto, -Ano), names_to = "Mes", values_to = "Vazao")
   Vazoes2029Mensal <- mutate(unite(Vazoes2029Mensal, Ano, Mes, col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
+  Vazoes2029Mensal$Mes <- parse_double(Vazoes2029Mensal$Mes)
   
   # Calcula incremental
   #Vaz2022MensalIncr <- CalcIncr(Vazoes2022Mensal, casc2022longa)
@@ -71,3 +72,9 @@ group_by(Vaz2029DiariaIncr, Nome) %>% summarise(n(), min(VazIncrcomTV), max(VazI
 
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% filter(VazMontTotal != 0) %>% distinct(Nome)
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
+
+left_join(group_by(mutate(VazDiaria, mes = month(Data), ano = year(Data)), Posto, ano, mes) %>% summarise(mean(Vazao)), filter(Vazoes2029Mensal, Ano >= 1982), by = c("ano" = "Ano", "mes" = "Mes"))
+#  Calcula diferença entre vazões mensal e diária
+left_join(group_by(mutate(VazDiaria, mes = month(Data), ano = year(Data)), Posto, ano, mes) %>% summarise(VazD = mean(Vazao)), filter(Vazoes2029Mensal, Ano >= 1982), by = c("ano" = "Ano", "mes" = "Mes", "Posto" = "Posto")) %>% mutate(diff = VazD - Vazao) %>% write_csv("Diferença entre vazões mensal e diária")
+
+VazDiaria[VazDiaria$Posto == 339 & VazDiaria$Data >= as_date("1990/05/01") & VazDiaria$Data <= as_date("1990/05/31"), ]
