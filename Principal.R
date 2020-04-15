@@ -7,7 +7,9 @@ source("importa vazões.R")
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
 #cascata_PDE_2022 <- read_delim("cascata - PDE 2022.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
-
+#  Mudo os postos de Itaipu de 66 para 266.
+cascata_PDE_2029[ cascata_PDE_2029$posto == 66, ]$posto <- 266
+cascata_PDE_2029[ cascata_PDE_2029$`Posto jusante` == 66, ]$`Posto jusante` <- 266
 
 #  Tempo de viagem
 # Do arquivo texto:
@@ -43,7 +45,7 @@ casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by
   
   # Calcula incremental
   #Vaz2022MensalIncr <- CalcIncr(Vazoes2022Mensal, casc2022longa)
-  Vaz2029MensalIncr <- CalcIncr(Vazoes2029Mensal, casc2029longa)
+  Vaz2029MensalIncr <- CalcIncr(Vazoes2029Mensal, mutate(casc2029longa, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
   # Muda para formato de tabela
   #Vaz2022MensalIncrTabela <- select(mutate(Vaz2022MensalIncr, Mes = month(Data), Ano = year(Data)), Ano, Mes, Posto, VazIncr) %>% 
   #  pivot_wider(names_from = Mes, values_from = VazIncr, values_fn = list(VazIncr = sum))
