@@ -7,9 +7,9 @@ source("importa vazões.R")
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
 #cascata_PDE_2022 <- read_delim("cascata - PDE 2022.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
-#  Mudo os postos de Itaipu de 66 para 266.
-cascata_PDE_2029[ cascata_PDE_2029$posto == 66, ]$posto <- 266
-cascata_PDE_2029[ cascata_PDE_2029$`Posto jusante` == 66, ]$`Posto jusante` <- 266
+#  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
+Nat_x_Art <- read_csv2("posto natural x artificial.csv")
+cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$Natural, .))
 
 #  Tempo de viagem
 # Do arquivo texto:
