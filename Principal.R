@@ -59,15 +59,20 @@ casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
 Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
 
+VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
+VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
+# Valores mensais a partir da média das vazões diárias.
+Vaz2029MensalIncrMedia <- group_by(mutate(Vaz2029DiariaIncr, Ano = year(Data), Mes = month(Data)), Ano, Mes, Nome, Posto) %>% summarize(VazIncrcomTV = mean(VazIncrcomTV))
+Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), Data = make_date(Ano, Mes)) 
+VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
+
+# Cria arquivos tsv
+write.table(VazIncrMesPlexos, "VazIncrMesPlexos_PDE.tsv", sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrMesPlexosMedia, "VazIncrMesMediaPlexos.tsv", sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrDiaPlexos, "VazIncrDiaPlexos.tsv", sep = "\t", dec = ",", row.names = FALSE)
+
 ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")
-
 group_by(Vaz2029DiariaIncr, Nome) %>% summarise(n(), min(VazIncrcomTV), max(VazIncrcomTV), qneg = sum(VazIncrcomTV < 0), prop = min(VazIncrcomTV) / max(VazIncrcomTV)) %>% arrange(prop) %>% print(n = 200)
-
-# Cria arquivos csv
-write_csv(Vaz2029MensalIncrTabela, "VazIncr2029porMes.csv")
-write_csv(Vaz2029DiariaIncr, "VazIncr2029porDia.csv")
-
-
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% filter(VazMontTotal != 0) %>% distinct(Nome)
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
 
