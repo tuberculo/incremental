@@ -4,6 +4,16 @@ source("importa vazões.R")
 # Preparação de dados -----------------------------------------------------
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
+#  Substitui Ilha Solteira equivalente por Ilha Solteira e Três Irmãos.
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 43, nome = "Tres Irmaos", 
+        posto = 243, `Quantos a montante?` = 1, `Posto jusante` = 245, 
+        `Posto montante 1` = 242, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+        `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 34, nome = "Ilha Solteira", 
+        posto = 34, `Quantos a montante?` = 5, `Posto jusante` = 245, 
+        `Posto montante 1` = 18, `Posto montante 2` = 33, `Posto montante 3` = 241, 
+        `Posto montante 4` = 99, `Posto montante 5` = 261, `Posto montante 6` = 999,)
+
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
 cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$Natural, .))
@@ -16,6 +26,7 @@ TempoViagem <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 1, col_types = c("numeri
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
 # Lê nome das usinas usado no Plexos
 NomesPlexos <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 2)
+NomesPlexos[NomesPlexos$Reservatório == "Reserv. MOXOTO", "Num PDE"] <- 176 # Muda número de Moxotó (173) para o de COMP PAF-MOX (176).
 # Altera a tabela de cascata para o formato longo
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
 #  Inclui nome do reservatório usado no Plexos
