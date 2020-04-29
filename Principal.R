@@ -16,7 +16,9 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 34, nome = "Ilha Solteira",
 
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
-cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$Natural, .))
+SubstArtificiais <- FALSE ## Decide se usa vazões naturais ou artificiais
+Nat_x_Art <- mutate(Nat_x_Art, NovaNatural = ifelse(Usa_sempre | SubstArtificiais, Natural, Artificial))
+cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$NovaNatural, .))
 
 #  Tempo de viagem
 # Do arquivo texto:
@@ -67,14 +69,17 @@ Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), Data = make_d
 VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
 
 # Cria arquivos tsv
-write.table(VazIncrMesPlexos, "VazIncrMesPlexos_PDE.tsv", sep = "\t", dec = ",", row.names = FALSE)
-write.table(VazIncrMesPlexosMedia, "VazIncrMesMediaPlexos.tsv", sep = "\t", dec = ",", row.names = FALSE)
-write.table(VazIncrDiaPlexos, "VazIncrDiaPlexos.tsv", sep = "\t", dec = ",", row.names = FALSE)
+if (SubstArtificiais) NomeArq <- "Artificiais" else NomeArq <- "Naturais"
+  
+write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
 
 ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")
+left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
+
 group_by(Vaz2029DiariaIncr, Nome) %>% summarise(n(), min(VazIncrcomTV), max(VazIncrcomTV), qneg = sum(VazIncrcomTV < 0), prop = min(VazIncrcomTV) / max(VazIncrcomTV)) %>% arrange(prop) %>% print(n = 200)
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% filter(VazMontTotal != 0) %>% distinct(Nome)
-left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
 
 left_join(group_by(mutate(VazDiaria, mes = month(Data), ano = year(Data)), Posto, ano, mes) %>% summarise(mean(Vazao)), filter(Vazoes2029Mensal, Ano >= 1982), by = c("ano" = "Ano", "mes" = "Mes"))
 #  Calcula diferença entre vazões mensal e diária
