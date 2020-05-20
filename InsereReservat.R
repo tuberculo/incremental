@@ -34,7 +34,7 @@ cascata_PDE_2029[cascata_PDE_2029$num == 118, c("posto", "Quantos a montante?", 
 # Ilha dos Pombos (130) <- Simplício/Anta (129) <- Sobragi <- Picada  
 #                          Simplício/Anta <- Santa Cecília (125) <- Funil < Santa Branca  //~~ Rio Paraíba do Sul
 #                                            Santa Cecília (125) <- Santana (203) <- Tócos (201)  //~~ Rio Piraí
-## Obs.: Não colocar nenhuma vazão para Nilo Peçanha no Plexos
+## Obs.: Não colocar nenhuma vazão para Nilo Peçanha, Fontes e Pereira Passos no Plexos
 
 cascata_PDE_2029[cascata_PDE_2029$num == 129, c("Quantos a montante?", "Posto montante 2")] <- list(2, 125) # Adiciona Santa Cecília a montante de Simplício.
 cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 125, nome = "Santa Cecília", 
