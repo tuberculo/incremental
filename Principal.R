@@ -70,7 +70,7 @@ Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), Data = make_d
 VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
 
 # Cria arquivos tsv
-if (SubstArtificiais) NomeArq <- "Artificiais" else NomeArq <- "Naturais"
+if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
   
 write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
 write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
