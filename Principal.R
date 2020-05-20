@@ -14,11 +14,12 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 34, nome = "Ilha Solteira",
         `Posto montante 1` = 18, `Posto montante 2` = 33, `Posto montante 3` = 241, 
         `Posto montante 4` = 99, `Posto montante 5` = 261, `Posto montante 6` = 999,)
 
+SubstArtificiais <- TRUE ## Decide se usa vazões naturais ou artificiais
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
-SubstArtificiais <- FALSE ## Decide se usa vazões naturais ou artificiais
 Nat_x_Art <- mutate(Nat_x_Art, NovaNatural = ifelse(Usa_sempre | SubstArtificiais, Natural, Artificial))
 cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$NovaNatural, .))
+if (SubstArtificiais) source("InsereReservat.R")
 
 #  Tempo de viagem
 # Do arquivo texto:

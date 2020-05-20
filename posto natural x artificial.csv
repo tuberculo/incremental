@@ -1,0 +1,21 @@
+Usina; Natural; Artificial; Usa_sempre
+Itaocara I; 199; 314; FALSE
+Lajes; 202; 132; FALSE
+Pereira Passos; 202; 306; FALSE
+Fontes; 202; 303; FALSE
+Santana; 203; 315; FALSE
+Barra Bonita; 237; 37; FALSE
+Bariri; 238; 38; FALSE
+Ibitinga; 239; 39; FALSE
+Promissão; 240; 40; FALSE
+Nova Avanhandava; 242; 42; FALSE
+Três Irmãos; 243; 43; FALSE
+Ilha Solteira equivalente; 244; 44; FALSE
+Jupiá; 245; 45; FALSE
+Porto Primavera; 246; 46; FALSE
+Itaipu; 266; 66; TRUE
+Segredo; 76; 75; FALSE; Obs.: Não estava na lista do ONS
+Jordão; 73; 70; FALSE; Obs.: Não estava na lista do ONS
+Ilha dos Pombos; 130; 299; FALSE; Obs.: Não estava na lista do ONS
+Anta/Simplício; 129; 126; FALSE; Obs.: Não estava na lista do ONS
+Moxotó; 173; 176; TRUE; Obs.: Troca COMP-PAF-MOX por Moxotó
