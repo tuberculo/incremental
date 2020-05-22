@@ -5,7 +5,7 @@ source("importa vazões.R")
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
 #  Substitui Ilha Solteira equivalente por Ilha Solteira e Três Irmãos.
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 43, nome = "Tres Irmaos", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 43, nome = "Tres Irmãos", 
         posto = 243, `Quantos a montante?` = 1, `Posto jusante` = 245, 
         `Posto montante 1` = 242, `Posto montante 2` = 999, `Posto montante 3` = 999, 
         `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
@@ -13,6 +13,12 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 34, nome = "Ilha Solteira",
         posto = 34, `Quantos a montante?` = 5, `Posto jusante` = 245, 
         `Posto montante 1` = 18, `Posto montante 2` = 33, `Posto montante 3` = 241, 
         `Posto montante 4` = 99, `Posto montante 5` = 261, `Posto montante 6` = 999,)
+# Insere São Domingos a montante de Porto Primavera
+cascata_PDE_2029[cascata_PDE_2029$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 9154, nome = "São Domingos", 
+                            posto = 154, `Quantos a montante?` = 0, `Posto jusante` = 246, 
+                            `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+                            `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 # Muda número de COMP-PAX-MOX (176) para número de Moxotó (173)
 cascata_PDE_2029[cascata_PDE_2029$num == 176, "num"] <- list(173) 
 
