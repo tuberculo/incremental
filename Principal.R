@@ -13,6 +13,8 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 34, nome = "Ilha Solteira",
         posto = 34, `Quantos a montante?` = 5, `Posto jusante` = 245, 
         `Posto montante 1` = 18, `Posto montante 2` = 33, `Posto montante 3` = 241, 
         `Posto montante 4` = 99, `Posto montante 5` = 261, `Posto montante 6` = 999,)
+# Muda número de COMP-PAX-MOX (176) para número de Moxotó (173)
+cascata_PDE_2029[cascata_PDE_2029$num == 176, "num"] <- list(173) 
 
 SubstArtificiais <- TRUE ## Decide se usa vazões naturais ou artificiais
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
@@ -29,7 +31,6 @@ TempoViagem <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 1, col_types = c("numeri
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
 # Lê nome das usinas usado no Plexos
 NomesPlexos <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 2)
-NomesPlexos[NomesPlexos$Reservatório == "Reserv. MOXOTO", "Num PDE"] <- 176 # Muda número de Moxotó (173) para o de COMP PAF-MOX (176).
 # Altera a tabela de cascata para o formato longo
 casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
 #  Inclui nome do reservatório usado no Plexos
