@@ -8,17 +8,17 @@
 
 ## Edgard de Souza a montante de Barra Bonita.("EDGARD DE SOUZA+TRIBUT " – posto 161)
 cascata_PDE_2029[cascata_PDE_2029$nome == "BARRA BONITA", c("Quantos a montante?", "Posto montante 1")] <- list(1, 161) # Muda usinas a montante
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 161, nome = "Edgard de Souza", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 107, nome = "Edgard de Souza", 
         posto = 161, `Quantos a montante?` = 2, `Posto jusante` = 37, # Jusante: Barra Bonita (37). Montante: Alto Tietê/Ponte Nova (160) e Traição (104)
         `Posto montante 1` = 160, `Posto montante 2` = 104, `Posto montante 3` = 999, 
         `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 160, nome = "Alto Tietê", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 105, nome = "Alto Tietê", #Também chamado de Ponte Nova
                    posto = 160, `Quantos a montante?` = 0, `Posto jusante` = 161, # Jusante: Edgard de Souza (161). Montante: nada
                    `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
                    `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 104, nome = "Traição", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 108, nome = "Traição", 
                    posto = 104, `Quantos a montante?` = 2, `Posto jusante` = 161, # Jusante: Edgard de Souza (161). Montante: Guarapiranga (117) e Billings+Pedras (119)
                    `Posto montante 1` = 117, `Posto montante 2` = 119, `Posto montante 3` = 999, 
                    `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
@@ -41,11 +41,11 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 125, nome = "Santa Cecília"
                             posto = 125, `Quantos a montante?` = 2, `Posto jusante` = 129, # Jusante: Simplício (129). Montante: Funil (123) e Santana (203)
                             `Posto montante 1` = 123, `Posto montante 2` = 203, `Posto montante 3` = 999, 
                             `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 9203, nome = "Santana", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 181, nome = "Santana", 
                             posto = 203, `Quantos a montante?` = 1, `Posto jusante` = 125, # Jusante: Santa Cecília (125). Montante: Tócos (201)
                             `Posto montante 1` = 201, `Posto montante 2` = 999, `Posto montante 3` = 999, 
                             `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 9201, nome = "Tócos", 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 180, nome = "Tócos", 
                             posto = 201, `Quantos a montante?` = 0, `Posto jusante` = 203, # Jusante: Santana (203). 
                             `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
                             `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
