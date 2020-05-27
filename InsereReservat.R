@@ -19,13 +19,16 @@ cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 105, nome = "Alto Tietê", #
                    `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 
 cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 108, nome = "Traição", 
-                   posto = 104, `Quantos a montante?` = 2, `Posto jusante` = 161, # Jusante: Edgard de Souza (161). Montante: Guarapiranga (117) e Billings+Pedras (119)
-                   `Posto montante 1` = 117, `Posto montante 2` = 119, `Posto montante 3` = 999, 
+                   posto = 104, `Quantos a montante?` = 2, `Posto jusante` = 161, # Jusante: Edgard de Souza (161). Montante: Guarapiranga (117) e Pedreira (109)
+                   `Posto montante 1` = 117, `Posto montante 2` = 109, `Posto montante 3` = 999, 
                    `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
-
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 109, nome = "Pedreira", 
+                    posto = 109, `Quantos a montante?` = 1, `Posto jusante` = 104, # Jusante: Traição (104). Montante: Billings (118)
+                    `Posto montante 1` = 118, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+                    `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 cascata_PDE_2029[cascata_PDE_2029$num == 117, c("Posto jusante")] <- list(104) # Muda jusante de Guarapiranga para Traição
-# Muda posto de Billings para 119 ("BILLINGS+PEDRAS "), jusante para Traição (104) e montante para nada.
-cascata_PDE_2029[cascata_PDE_2029$num == 118, c("posto", "Quantos a montante?", "Posto montante 1", "Posto jusante")] <- list(119, 0, 999, 104) 
+# Muda posto de Billings para 118 ("BILLINGS "), jusante para Pedreira (109) e montante para nada.
+cascata_PDE_2029[cascata_PDE_2029$num == 118, c("posto", "Quantos a montante?", "Posto montante 1", "Posto jusante")] <- list(118, 0, 999, 109) 
 
 
 # Bacia do Paraíba do Sul ----------------------------------------------------------
