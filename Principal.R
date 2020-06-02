@@ -68,12 +68,13 @@ casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
 
 Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
-
-VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
-VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
 # Valores mensais a partir da média das vazões diárias.
 Vaz2029MensalIncrMedia <- group_by(mutate(Vaz2029DiariaIncr, Ano = year(Data), Mes = month(Data)), Ano, Mes, Nome, Posto) %>% summarize(VazIncrcomTV = mean(VazIncrcomTV))
 Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), Data = make_date(Ano, Mes)) 
+
+# Muda para um posto por coluna
+VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
+VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
 VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
 
 # Cria arquivos tsv
