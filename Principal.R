@@ -1,3 +1,10 @@
+library(lubridate)
+library(tidyverse)
+library(readxl)
+
+CodUsinasExp <- read_csv2("código usinas expansão.csv")
+ArquivoVazoesDiarias <- "../Vazões_Diárias_1982_nat+art_ONS+Exp_r08.xlsx"
+
 source("calc_incr.R")
 source("importa vazões.R")
 
