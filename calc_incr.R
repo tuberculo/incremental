@@ -34,3 +34,11 @@ CalcIncr <- function(Vazoes, Cascata) {
   Vazoes <- mutate(Vazoes, VazIncr = Vazao - VazMontTotal, VazIncrcomTV = Vazao - VazMontTotalcomTV)
   Vazoes
 }
+
+FormatoPlexos <- function(Vaz, cascata = casc2029longa, diario = FALSE) {
+  Vaz <- mutate_if(Vaz, is.numeric, round, digits = 3)
+  Vaz <- distinct(select(drop_na(left_join(Vaz, cascata, by = c("Posto" = "posto"))), Data, NomePlexos, VazIncrcomTV))
+  Vaz <- mutate(Vaz, YEAR = year(Data), MONTH = month(Data))
+  if (diario) {Vaz <- mutate(Vaz, DAY = day(Data))}
+  Vaz <- pivot_wider(select(Vaz, -Data), values_from = VazIncrcomTV, names_from = NomePlexos)
+}

@@ -1,12 +1,32 @@
+library(lubridate)
+library(tidyverse)
+library(readxl)
+
+CodUsinasExp <- read_csv2("código usinas expansão.csv")
+ArquivoVazoesDiarias <- "../Vazões_Diárias_1982_nat+art_ONS+Exp_r08.xlsx"
+
 source("calc_incr.R", encoding = "UTF-8")
 source("importa vazões.R", encoding = "UTF-8")
 
 # Preparação de dados -----------------------------------------------------
 # Lê arquivo com cascata
 cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", escape_double = FALSE, locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), trim_ws = TRUE)
+
+# Insere São Domingos a montante de Porto Primavera
+cascata_PDE_2029[cascata_PDE_2029$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
+cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 153, nome = "São Domingos", 
+                            posto = 154, `Quantos a montante?` = 0, `Posto jusante` = 246, 
+                            `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+                            `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
+# Muda número de COMP-PAX-MOX (176) para número de Moxotó (173)
+cascata_PDE_2029[cascata_PDE_2029$num == 176, "num"] <- list(173) 
+
+SubstArtificiais <- TRUE ## Decide se usa vazões naturais ou artificiais
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
-cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$Natural, .))
+Nat_x_Art <- mutate(Nat_x_Art, NovaNatural = ifelse(Usa_sempre | SubstArtificiais, Natural, Artificial))
+cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")), ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$NovaNatural, .))
+if (SubstArtificiais) source("InsereReservat.R")
 
 #  Tempo de viagem
 # Do arquivo texto:
@@ -47,18 +67,27 @@ casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
 
 Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
+# Valores mensais a partir da média das vazões diárias.
+Vaz2029MensalIncrMedia <- group_by(mutate(Vaz2029DiariaIncr, Ano = year(Data), Mes = month(Data)), Ano, Mes, Nome, Posto) %>% summarize(VazIncrcomTV = mean(VazIncrcomTV))
+Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), Data = make_date(Ano, Mes)) 
+
+# Muda para um posto por coluna
+VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
+VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
+VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
+
+# Cria arquivos tsv
+if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
+  
+write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
 
 ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")
+left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
 
 group_by(Vaz2029DiariaIncr, Nome) %>% summarise(n(), min(VazIncrcomTV), max(VazIncrcomTV), qneg = sum(VazIncrcomTV < 0), prop = min(VazIncrcomTV) / max(VazIncrcomTV)) %>% arrange(prop) %>% print(n = 200)
-
-# Cria arquivos csv
-write_csv(Vaz2029MensalIncrTabela, "VazIncr2029porMes.csv")
-write_csv(Vaz2029DiariaIncr, "VazIncr2029porDia.csv")
-
-
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% filter(VazMontTotal != 0) %>% distinct(Nome)
-left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
 
 left_join(group_by(mutate(VazDiaria, mes = month(Data), ano = year(Data)), Posto, ano, mes) %>% summarise(mean(Vazao)), filter(Vazoes2029Mensal, Ano >= 1982), by = c("ano" = "Ano", "mes" = "Mes"))
 #  Calcula diferença entre vazões mensal e diária
