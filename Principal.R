@@ -1,5 +1,5 @@
-source("calc_incr.R")
-source("importa vazões.R")
+source("calc_incr.R", encoding = "UTF-8")
+source("importa vazões.R", encoding = "UTF-8")
 
 # Preparação de dados -----------------------------------------------------
 # Lê arquivo com cascata
