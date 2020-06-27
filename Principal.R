@@ -79,9 +79,9 @@ VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FA
 # Cria arquivos tsv
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
   
-write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
-write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
-write.table(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE)
+write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
+write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
+write.table(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
 
 ggplot(filter(Vaz2029DiariaIncr, Posto == 169, Data < as_date("1985/01/01"), Data > as_date("1983/01/01"))) + geom_line(aes(x = Data, y = VazIncrcomTV), colour = "blue") + geom_line(aes(x = Data, y = VazIncr), colour = "red") + geom_line(aes(x = Data, y = Vazao)) + geom_line(aes(x = Data, y = VazMontTotal), colour = "orange") + geom_line(aes(x = Data, y = VazMontTotalcomTV), colour = "green")
 left_join(Vaz2029DiariaIncr, select(casc2029longa, posto, NomePlexos), by = c("Posto" = "posto")) %>% filter(is.na(NomePlexos)) %>% distinct(Nome) %>%  print(n = 40)
