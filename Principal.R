@@ -2,10 +2,8 @@ library(lubridate)
 library(tidyverse)
 library(readxl)
 
-CodUsinasExp <- read_csv2("código usinas expansão.csv")
 ArquivoVazoesDiarias <- "../Vazões_Diarias_1982_nat+art_ONS+Exp_r11.csv"
-
-source("calc_incr.R", encoding = "UTF-8")
+source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 
 # Lê vazões. --------------------------------------------------------------
 VazDiaria <- read_csv2(ArquivoVazoesDiarias, locale = locale(encoding = guess_encoding(ArquivoVazoesDiarias)[[1]]))
