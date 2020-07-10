@@ -2,7 +2,8 @@ library(lubridate)
 library(tidyverse)
 library(readxl)
 
-ArquivoVazoesDiarias <- "../Vazões_Diarias_1982_nat+art_ONS+Exp_r11.csv"
+ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
+#ArquivoVazoesDiarias <- "../Vazões_Diarias_1982_nat+art_ONS+Exp_r11.csv"
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 
 # Lê vazões. --------------------------------------------------------------
