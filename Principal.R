@@ -1,6 +1,15 @@
-library(lubridate)
-library(tidyverse)
-library(readxl)
+if (!require(readxl)) {
+  install.packages("readxl")
+  library(readxl)
+}
+if (!require(lubridate)) {
+  install.packages("lubridate")
+  library(lubridate)
+}
+if (!require(tidyverse)) {
+  install.packages("tidyverse")
+  library(tidyverse)
+}
 
 ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
 #ArquivoVazoesDiarias <- "../Vazões_Diarias_1982_nat+art_ONS+Exp_r11.csv"

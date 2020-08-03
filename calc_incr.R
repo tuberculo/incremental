@@ -1,4 +1,3 @@
-
 PreparaTabelaCascata <- function(CascataEntrada) {
   cascataLonga <- pivot_longer(CascataEntrada, cols = c(`Posto montante 1`, `Posto montante 2`, `Posto montante 3`, `Posto montante 4`, `Posto montante 5`,`Posto montante 6`), values_to = "PostoMontante")
 #  cascataLonga$PostoMontante <- parse_integer(gsub(999, NA, cascataLonga$PostoMontante))
@@ -9,8 +8,6 @@ PreparaTabelaCascata <- function(CascataEntrada) {
   cascataLonga <- drop_na(cascataLonga)
   cascataLonga
 }
-
-# Adicionar aqui função com tempo de viagem.
 
 CalcIncr <- function(Vazoes, Cascata) {
   #  Vazões à montante de cada posto, por posto à montante.
