@@ -97,8 +97,6 @@ VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FA
 # Cria arquivos tsv
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
   
-write.table(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
-write.table(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
-write.table(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".tsv"), sep = "\t", dec = ",", row.names = FALSE, quote = FALSE)
-
-
+write_csv2(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".csv"))
+write_csv2(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".csv"))
+write_csv2(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".csv"))
