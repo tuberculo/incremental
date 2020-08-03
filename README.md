@@ -17,3 +17,7 @@ mod: resto da divisão
 
 int: divisão inteira
 
+## Como rodar
+Na linha de comando:
+* git clone https://github.com/tuberculo/incremental
+* Rscript "nome do arquivo com as vazões diárias"
