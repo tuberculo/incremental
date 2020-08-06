@@ -20,7 +20,7 @@ VazDiaria <- read_csv2(ArquivoVazoesDiarias, locale = locale(encoding = guess_en
 VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("Ymd", "dmY"))
 
 VazDiaria <- pivot_longer(VazDiaria, cols = -Data, names_to = "Usina", values_to = "Vazao") # De colunas para variável
-VazDiaria <- separate(VazDiaria, Usina, into = c("Nome", "Posto"), sep = "\\((?=[:digit:]+\\))") # Separa nome do número do posto.
+VazDiaria <- separate(VazDiaria, Usina, into = c("Nome", "Posto"), sep = "\\((?=[[:digit:]]+\\))") # Separa nome do número do posto.
 VazDiaria$Posto <- gsub("\\)", "", VazDiaria$Posto) # Retira o ")" do final do número do posto.
 VazDiaria$Posto <- parse_integer(VazDiaria$Posto) # Transforma em número
 
