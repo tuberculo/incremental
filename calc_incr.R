@@ -19,7 +19,7 @@ CalcIncr <- function(Vazoes, Cascata) {
     c("Data" = "Data", "Posto" = "posto"))), Posto, PostoMontante) %>% 
     arrange(Posto, PostoMontante, Data) %>% 
     mutate(VazMontLag = lag(VazãoMontante, n = (TempViag[1] %/% 24 + 1), default = 0), 
-           VazMontLagDiaSeg = lag(VazãoMontante, n = (TempViag[1] %/% 24), default = 0)) %>% 
+           VazMontLagDiaSeg = lag(VazãoMontante, n = (TempViag[1] %/% 24), default = 0)) %>% #DiaSeg = [N-1]
     ungroup()
   # Faz o cálculo proporcional à quantidade de horas do dia que inicia o tempo de viagem mais o dia seguinte.
   VazMontporPosto <- group_by(VazMontporPosto, Data, Posto) %>% 
