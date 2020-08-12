@@ -12,13 +12,13 @@ if (!require(tidyverse)) {
 }
 
 ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
-#ArquivoVazoesDiarias <- "../Vazões_Diarias_ajuste_mensal_1982_nat+art_ONS+Exp_r02.csv"
+#ArquivoVazoesDiarias <- "../Vazões_Diarias_ajuste_mensal_1982_nat+art_ONS+Exp_r03.csv"
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 
 # Lê vazões. --------------------------------------------------------------
 VazDiaria <- read_csv2(ArquivoVazoesDiarias, locale = locale(encoding = guess_encoding(ArquivoVazoesDiarias)[[1]]))
 VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("Ymd", "dmY"))
-#VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("mdY"))
+#VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("mdy"))
 
 VazDiaria <- pivot_longer(VazDiaria, cols = -Data, names_to = "Usina", values_to = "Vazao") # De colunas para variável
 VazDiaria <- separate(VazDiaria, Usina, into = c("Nome", "Posto"), sep = "\\((?=[[:digit:]]+\\))") # Separa nome do número do posto.
@@ -53,6 +53,7 @@ if (SubstArtificiais) source("InsereReservat.R")
 # Da planilha:
 TempoViagem <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 1, col_types = c("numeric", "text", "numeric", "text", "skip", "skip", "numeric", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip", "skip"), col_names = c("Montante", "NomeMontante", "Jusante", "NomeJusante", "TempViag"), skip = 4)
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
+#TempoViagem$TempViag <- 0
 # Lê nome das usinas usado no Plexos
 NomesPlexos <- read_xlsx("Tempo-de-Viagem-Plexos.xlsx", 2)
 # Altera a tabela de cascata para o formato longo
@@ -95,7 +96,7 @@ VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Val
 VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
 VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
 
-# Cria arquivos tsv
+# Cria arquivos csv
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
   
 write_csv2(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".csv"))
