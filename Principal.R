@@ -11,14 +11,13 @@ if (!require(tidyverse)) {
   library(tidyverse)
 }
 
-ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
-#ArquivoVazoesDiarias <- "../Vazões_Diarias_ajuste_mensal_1982_nat+art_ONS+Exp_r03.csv"
-source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
+ArquivoVazoesDiarias <- "../Vazões_Diarias_ajuste_mensal_1982_nat+art_ONS+Exp_r06.csv"
+if (lenght(commandArgs(trailingOnly = TRUE)) != 0) ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
 
+source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 # Lê vazões. --------------------------------------------------------------
 VazDiaria <- read_csv2(ArquivoVazoesDiarias, locale = locale(encoding = guess_encoding(ArquivoVazoesDiarias)[[1]]))
-VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("Ymd", "dmY"))
-#VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("mdy"))
+VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("mdy", "Ymd", "dmY"))
 
 VazDiaria <- pivot_longer(VazDiaria, cols = -Data, names_to = "Usina", values_to = "Vazao") # De colunas para variável
 VazDiaria <- separate(VazDiaria, Usina, into = c("Nome", "Posto"), sep = "\\((?=[[:digit:]]+\\))") # Separa nome do número do posto.
