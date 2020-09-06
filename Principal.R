@@ -18,6 +18,7 @@ if (length(commandArgs(trailingOnly = TRUE)) != 0) ArquivoVazoesDiarias <- comma
 ArqTV <- "P_tempo de viagem.xlsx"
 ArqNomesReservat <- "NomesReservat.csv"
 ArquivoVazoes2029 <- "vazoes2029.txt" # Arquivo de vazões mensais (PDE)
+UsaTV <- TRUE # Usa tempo de viagem?
 
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 # Lê vazões. --------------------------------------------------------------
@@ -57,15 +58,12 @@ cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")),
 if (SubstArtificiais) source("InsereReservat.R")
 
 #  Tempo de viagem
-# Do arquivo texto:
-#TempoViagem <- read_fwf("tempo de viagem.txt", fwf_widths(c(6, 3, 4, 3, 6, 3), col_names = c("cod", "Montante", "Jusante", "tp", "TempViag", "tpTVIAG")), skip = 2)
-# Da planilha:
 TempoViagem <- read_xlsx(ArqTV, 1, 
                          range = cell_cols("A:G"),
                          col_types = c("numeric", "text", "numeric", "text", "skip", "skip", "numeric"))
 colnames(TempoViagem) <- c("Montante", "NomeMontante", "Jusante", "NomeJusante", "TempViag")
 TempoViagem <- select(TempoViagem, Montante, Jusante, TempViag)
-#TempoViagem$TempViag <- 0
+if (!UsaTV) TempoViagem$TempViag <- 0
 # Lê nome das usinas usado no Plexos
 NomesPlexos <- read_csv(ArqNomesReservat)
 # Altera a tabela de cascata para o formato longo
