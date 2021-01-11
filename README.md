@@ -5,17 +5,16 @@ A vazão incremental é a vazão natural afluente do posto menos a vazão de cad
 
 Assim, a fórmula é:
 
-((24 - TV mod 24) * VM[N-1] + (TV mod 24) * VM[N]) / 24))
+VMC = ((24 - TV mod 24) * VM[N-1] + (TV mod 24) * VM[N]) / 24))
 
-Onde: 
+Onde:
 
-TV = Tempo de viagem [h];
-
-N = Númeto de dias anteriores para começar a contar a vazão a montante. Dado por (int(TV/24) + 1).
-
-mod: resto da divisão
-
-int: divisão inteira
+* VMC: Vazão a montante corrigida.
+* TV: Tempo de viagem [h];
+* N: Número de dias anteriores para começar a contar a vazão a montante. Dado por (int(TV/24) + 1).
+* VM[N] = Vazão a montante ocorrida há N dias.
+* mod: resto da divisão
+* int: divisão inteira
 
 ## Como rodar
 Na linha de comando:
