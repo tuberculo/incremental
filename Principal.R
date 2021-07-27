@@ -17,7 +17,7 @@ ArquivoVazoesDiarias <- "../Vazões_Diarias_ajuste_mensal_1982_nat+art_ONS+Exp_r
 if (length(commandArgs(trailingOnly = TRUE)) != 0) ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
 ArqTV <- "P_tempo de viagem.xlsx"
 ArqNomesReservat <- "NomesReservat.csv"
-ArquivoVazoes2029 <- "vazoes2029.txt" # Arquivo de vazões mensais (PDE)
+ArquivoVazoes <- "vazoes2029.txt" # Arquivo de vazões mensais (PDE)
 UsaTV <- TRUE # Usa tempo de viagem?
 
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
@@ -74,7 +74,7 @@ casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by
 # Cálculo com vazões mensais -----------------------------------------------
   
   # Carrega vazões do arquivo Newave
-  Vazoes2029Mensal <- read_fwf(ArquivoVazoes2029, fwf_empty(ArquivoVazoes2029, 
+  Vazoes2029Mensal <- read_fwf(ArquivoVazoes, fwf_empty(ArquivoVazoes, 
     col_names = c("Posto", "Ano", 1:12), n = 10000L), col_types = cols(.default = "d"))
   
   # Muda para formato longo e adiciona coluna com data
