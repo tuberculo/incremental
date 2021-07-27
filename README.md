@@ -8,6 +8,7 @@ Cálculo de vazão incremental a partir das vazões naturais por posto.
 - Arquivo com a informação de quais reservatórios estão a montante de cada usina.
 
 Esse último arquivo é obtido a partir do arquivo confhd do Newave com o auxílio da planilha "cascata - PDE 20XX.ods" (salvar a aba "exportar como csv"). Possível melhoria: fazer essa rotina de listar usinas a montante no R em vez de planilha.
+Os nomes do arquivos devem ser informados no arquivo "Dados.R".
 
 ## Forma de cálculo
 A vazão incremental é a vazão natural afluente do posto menos a vazão de cada posto a montante. No caso de haver tempo de viagem (dado em horas) entre um posto e outro, a vazão do posto a montante é dada pela ponderação entre o número de horas do dia que começa a contar o tempo de viagem e o número de horas restantes no dia seguinte. 
@@ -28,4 +29,4 @@ Onde:
 ## Como rodar
 Na linha de comando:
 * git clone https://github.com/tuberculo/incremental
-* Rscript Principal.R "nome do arquivo com as vazões diárias"
+* Rscript Principal.R 
