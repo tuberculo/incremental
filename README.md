@@ -19,4 +19,4 @@ Onde:
 ## Como rodar
 Na linha de comando:
 * git clone https://github.com/tuberculo/incremental
-* Rscript "nome do arquivo com as vazões diárias"
+* Rscript Principal.R "nome do arquivo com as vazões diárias"
