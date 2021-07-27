@@ -27,25 +27,25 @@ VazDiaria <- drop_na(VazDiaria)
 
 # Preparação de dados -----------------------------------------------------
 # Lê arquivo com cascata
-cascata_PDE_2029 <- read_delim("cascata - PDE 2029.csv", ";", 
+cascataPDE <- read_delim(ArquivoCascata, ";", 
                                escape_double = FALSE, 
                                locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), 
                                trim_ws = TRUE)
 
 # Insere São Domingos a montante de Porto Primavera
-cascata_PDE_2029[cascata_PDE_2029$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
-cascata_PDE_2029 <- add_row(cascata_PDE_2029, num = 153, nome = "São Domingos", 
+cascataPDE[cascataPDE$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
+cascataPDE <- add_row(cascataPDE, num = 153, nome = "São Domingos", 
                             posto = 154, `Quantos a montante?` = 0, `Posto jusante` = 246, 
                             `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
                             `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 # Muda número de COMP-PAX-MOX (176) para número de Moxotó (173)
-cascata_PDE_2029[cascata_PDE_2029$num == 176, "num"] <- list(173) 
+cascataPDE[cascataPDE$num == 176, "num"] <- list(173) 
 
 SubstArtificiais <- TRUE ## Decide se usa vazões naturais ou artificiais
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
 Nat_x_Art <- mutate(Nat_x_Art, NovaNatural = ifelse(Usa_sempre | SubstArtificiais, Natural, Artificial))
-cascata_PDE_2029 <- mutate_at(cascata_PDE_2029, vars(contains("Posto")),
+cascataPDE <- mutate_at(cascataPDE, vars(contains("Posto")),
                               ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$NovaNatural, .))
 if (SubstArtificiais) source("InsereReservat.R")
 
@@ -59,26 +59,26 @@ if (!UsaTV) TempoViagem$TempViag <- 0
 # Lê nome das usinas usado no Plexos
 NomesPlexos <- read_csv(ArqNomesReservat)
 # Altera a tabela de cascata para o formato longo
-casc2029longa <- PreparaTabelaCascata(cascata_PDE_2029)
+CascataLonga <- PreparaTabelaCascata(cascataPDE)
 #  Inclui nome do reservatório usado no Plexos
-casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by = c("num" = "Num PDE")), NomePlexos = Reservatório)
+CascataLonga <- rename(left_join(CascataLonga, select(NomesPlexos, -Bacia), by = c("num" = "Num PDE")), NomePlexos = Reservatório)
 
 # Cálculo com vazões mensais -----------------------------------------------
   
   # Carrega vazões do arquivo Newave
-  Vazoes2029Mensal <- read_fwf(ArquivoVazoes, fwf_empty(ArquivoVazoes, 
+  VazoesMensal <- read_fwf(ArquivoVazoes, fwf_empty(ArquivoVazoes, 
     col_names = c("Posto", "Ano", 1:12), n = 10000L), col_types = cols(.default = "d"))
   
   # Muda para formato longo e adiciona coluna com data
-  Vazoes2029Mensal <- pivot_longer(Vazoes2029Mensal, 
+  VazoesMensal <- pivot_longer(VazoesMensal, 
                                    cols = c(-Posto, -Ano), names_to = "Mes", values_to = "Vazao")
-  Vazoes2029Mensal <- mutate(unite(Vazoes2029Mensal, Ano, Mes, 
+  VazoesMensal <- mutate(unite(VazoesMensal, Ano, Mes, 
                                    col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
-  Vazoes2029Mensal$Mes <- parse_double(Vazoes2029Mensal$Mes)
+  VazoesMensal$Mes <- parse_double(VazoesMensal$Mes)
   
   # Calcula incremental
-  Vaz2029MensalIncr <- CalcIncr(Vazoes2029Mensal, 
-                                mutate(casc2029longa, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
+  Vaz2029MensalIncr <- CalcIncr(VazoesMensal, 
+                                mutate(CascataLonga, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
   # Muda para formato de tabela
   Vaz2029MensalIncrTabela <- select(mutate(Vaz2029MensalIncr, 
                                            Mes = month(Data), 
@@ -89,11 +89,11 @@ casc2029longa <- rename(left_join(casc2029longa, select(NomesPlexos, -Bacia), by
 # Cálculo com vazões diárias ----------------------------------------------
 
 # Adiciona informação do tempo de viagem na tabela de cascata
-casc2029longa <- left_join(casc2029longa, TempoViagem, by = c("UsinaMontante" = "Montante", "num" = "Jusante"))
+CascataLonga <- left_join(CascataLonga, TempoViagem, by = c("UsinaMontante" = "Montante", "num" = "Jusante"))
 # Substitui NA por 0 quando não há informação do tempo de viagem.
-casc2029longa$TempViag <- replace_na(casc2029longa$TempViag, 0)
+CascataLonga$TempViag <- replace_na(CascataLonga$TempViag, 0)
 
-Vaz2029DiariaIncr <- CalcIncr(VazDiaria, casc2029longa)
+Vaz2029DiariaIncr <- CalcIncr(VazDiaria, CascataLonga)
 Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
 # Valores mensais a partir da média das vazões diárias.
 Vaz2029MensalIncrMedia <- group_by(mutate(Vaz2029DiariaIncr, 
@@ -104,9 +104,9 @@ Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia),
                                   Data = make_date(Ano, Mes)) 
 
 # Muda para um posto por coluna
-VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, casc2029longa, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
-VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, casc2029longa, TRUE)
-VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, casc2029longa, FALSE)
+VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
+VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, CascataLonga, TRUE)
+VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, CascataLonga, FALSE)
 
 # Cria arquivos csv
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
