@@ -32,12 +32,12 @@ cascataPDE <- read_delim(ArquivoCascata, ";",
                                locale = locale(date_names = "pt", decimal_mark = ",", grouping_mark = "."), 
                                trim_ws = TRUE)
 
-# Insere São Domingos a montante de Porto Primavera
-cascataPDE[cascataPDE$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
-cascataPDE <- add_row(cascataPDE, num = 153, nome = "São Domingos", 
-                            posto = 154, `Quantos a montante?` = 0, `Posto jusante` = 246, 
-                            `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
-                            `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
+# Insere São Domingos a montante de Porto Primavera -- Obs.: São Domingos não está no deck do PDE 2030, por isso esta parte foi comentada.
+# cascataPDE[cascataPDE$num == 46, c("Quantos a montante?", "Posto montante 2")] <- list(2, 154) 
+# cascataPDE <- add_row(cascataPDE, num = 153, nome = "São Domingos", 
+#                             posto = 154, `Quantos a montante?` = 0, `Posto jusante` = 246, 
+#                             `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+#                             `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 # Muda número de COMP-PAX-MOX (176) para número de Moxotó (173)
 cascataPDE[cascataPDE$num == 176, "num"] <- list(173) 
 
