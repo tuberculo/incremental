@@ -77,10 +77,10 @@ CascataLonga <- rename(left_join(CascataLonga, select(NomesPlexos, -Bacia), by =
   VazoesMensal$Mes <- parse_double(VazoesMensal$Mes)
   
   # Calcula incremental
-  Vaz2029MensalIncr <- CalcIncr(VazoesMensal, 
+  VazMensalIncr <- CalcIncr(VazoesMensal, 
                                 mutate(CascataLonga, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
   # Muda para formato de tabela
-  Vaz2029MensalIncrTabela <- select(mutate(Vaz2029MensalIncr, 
+  VazMensalIncrTabela <- select(mutate(VazMensalIncr, 
                                            Mes = month(Data), 
                                            Ano = year(Data)), 
                                     Ano, Mes, Posto, VazIncr) %>% 
@@ -93,20 +93,20 @@ CascataLonga <- left_join(CascataLonga, TempoViagem, by = c("UsinaMontante" = "M
 # Substitui NA por 0 quando não há informação do tempo de viagem.
 CascataLonga$TempViag <- replace_na(CascataLonga$TempViag, 0)
 
-Vaz2029DiariaIncr <- CalcIncr(VazDiaria, CascataLonga)
-Vaz2029DiariaIncr <- drop_na(Vaz2029DiariaIncr)
+VazDiariaIncr <- CalcIncr(VazDiaria, CascataLonga)
+VazDiariaIncr <- drop_na(VazDiariaIncr)
 # Valores mensais a partir da média das vazões diárias.
-Vaz2029MensalIncrMedia <- group_by(mutate(Vaz2029DiariaIncr, 
+VazMensalIncrMedia <- group_by(mutate(VazDiariaIncr, 
                                           Ano = year(Data), Mes = month(Data)), 
                                    Ano, Mes, Nome, Posto) %>% 
   summarize(VazIncrcomTV = mean(VazIncrcomTV))
-Vaz2029MensalIncrMedia <-  mutate(ungroup(Vaz2029MensalIncrMedia), 
+VazMensalIncrMedia <-  mutate(ungroup(VazMensalIncrMedia), 
                                   Data = make_date(Ano, Mes)) 
 
 # Muda para um posto por coluna
-VazIncrMesPlexos <- FormatoPlexos(Vaz2029MensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
-VazIncrDiaPlexos <- FormatoPlexos(Vaz2029DiariaIncr, CascataLonga, TRUE)
-VazIncrMesPlexosMedia <- FormatoPlexos(Vaz2029MensalIncrMedia, CascataLonga, FALSE)
+VazIncrMesPlexos <- FormatoPlexos(VazMensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
+VazIncrDiaPlexos <- FormatoPlexos(VazDiariaIncr, CascataLonga, TRUE)
+VazIncrMesPlexosMedia <- FormatoPlexos(VazMensalIncrMedia, CascataLonga, FALSE)
 
 # Cria arquivos csv
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
