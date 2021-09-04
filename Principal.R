@@ -114,3 +114,9 @@ if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
 write_csv2(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".csv"))
 write_csv2(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".csv"))
 write_csv2(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".csv"))
+
+# boxplot geral
+VazIncrDiaPlexos %>% 
+  pivot_longer(-c(YEAR, MONTH, DAY), names_to = "Reservatório", values_to = "Vazão") %>% 
+  ggplot() + geom_boxplot(aes(x = Reservatório, y = Vazão)) + theme_minimal() + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
