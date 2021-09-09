@@ -10,6 +10,10 @@ if (!require(tidyverse)) {
   install.packages("tidyverse")
   library(tidyverse)
 }
+if (!require(feather)) {
+  install.packages("tidyverse")
+  library(feather)
+}
 
 source("Dados.R", encoding = "UTF-8") # Carrega dados e nome dos arquivos
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
@@ -64,27 +68,26 @@ CascataLonga <- PreparaTabelaCascata(cascataPDE)
 CascataLonga <- rename(left_join(CascataLonga, select(NomesPlexos, -Bacia), by = c("num" = "Num PDE")), NomePlexos = Reservatório)
 
 # Cálculo com vazões mensais -----------------------------------------------
-  
-  # Carrega vazões do arquivo Newave
-  VazoesMensal <- read_fwf(ArquivoVazoes, fwf_empty(ArquivoVazoes, 
-    col_names = c("Posto", "Ano", 1:12), n = 10000L), col_types = cols(.default = "d"))
-  
-  # Muda para formato longo e adiciona coluna com data
-  VazoesMensal <- pivot_longer(VazoesMensal, 
-                                   cols = c(-Posto, -Ano), names_to = "Mes", values_to = "Vazao")
-  VazoesMensal <- mutate(unite(VazoesMensal, Ano, Mes, 
-                                   col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
-  VazoesMensal$Mes <- parse_double(VazoesMensal$Mes)
-  
-  # Calcula incremental
-  VazMensalIncr <- CalcIncr(VazoesMensal, 
-                                mutate(CascataLonga, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
-  # Muda para formato de tabela
-  VazMensalIncrTabela <- select(mutate(VazMensalIncr, 
-                                           Mes = month(Data), 
-                                           Ano = year(Data)), 
-                                    Ano, Mes, Posto, VazIncr) %>% 
-    pivot_wider(names_from = Mes, values_from = VazIncr, values_fn = list(VazIncr = sum))
+# Carrega vazões do arquivo Newave
+VazoesMensal <- read_fwf(ArquivoVazoes, 
+                         fwf_empty(ArquivoVazoes, 
+                                   col_names = c("Posto", "Ano", 1:12), n = 10000L), 
+                         col_types = cols(.default = "d"))
+# Muda para formato longo e adiciona coluna com data
+VazoesMensal <- pivot_longer(VazoesMensal, 
+                             cols = c(-Posto, -Ano), names_to = "Mes", values_to = "Vazao")
+VazoesMensal <- mutate(unite(VazoesMensal, Ano, Mes, 
+                             col = data, remove = FALSE), Data = parse_date_time(data, "Ym"), data = NULL)
+VazoesMensal$Mes <- parse_double(VazoesMensal$Mes)
+# Calcula incremental
+VazMensalIncr <- CalcIncr(VazoesMensal, 
+                          mutate(CascataLonga, TempViag = 0)) # Insere coluna de tempo de viagem com valor 0 para não considerar isso no cálculo mensal.
+# Muda para formato de tabela
+VazMensalIncrTabela <- select(mutate(VazMensalIncr, 
+                                     Mes = month(Data), 
+                                     Ano = year(Data)), 
+                              Ano, Mes, Posto, VazIncr) %>% 
+  pivot_wider(names_from = Mes, values_from = VazIncr, values_fn = list(VazIncr = sum))
 
 # Cálculo com vazões diárias ----------------------------------------------
 
@@ -103,14 +106,20 @@ VazMensalIncrMedia <- group_by(mutate(VazDiariaIncr,
 VazMensalIncrMedia <-  mutate(ungroup(VazMensalIncrMedia), 
                                   Data = make_date(Ano, Mes)) 
 
+if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
+# Cria arquivos feather
+write_feather(VazDiariaIncr, paste0("VazIncrDiaPlexos", NomeArq, ".feather"))
+write_feather(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".feather"))
+write_feather(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".feather"))
+
+
 # Muda para um posto por coluna
 VazIncrMesPlexos <- FormatoPlexos(VazMensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
 VazIncrDiaPlexos <- FormatoPlexos(VazDiariaIncr, CascataLonga, TRUE)
 VazIncrMesPlexosMedia <- FormatoPlexos(VazMensalIncrMedia, CascataLonga, FALSE)
 
 # Cria arquivos csv
-if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
-  
+
 write_csv2(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".csv"))
 write_csv2(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".csv"))
 write_csv2(VazIncrDiaPlexos, paste0("VazIncrDiaPlexos", NomeArq, ".csv"))
