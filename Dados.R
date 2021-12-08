@@ -1,5 +1,5 @@
 # Dados -------------------------------------------------------------------
-ArquivoVazoesDiarias <- "../Vazões_Diárias_1982_2019_tripa_Completo+Exp_ADJ_r00.csv"
+ArquivoVazoesDiarias <- "../Vazões_Diárias_1982_2019_tripa_Completo+Exp_ADJ_r03.csv"
 if (length(commandArgs(trailingOnly = TRUE)) != 0) ArquivoVazoesDiarias <- commandArgs(trailingOnly = TRUE)
 ArqTV <- "P_tempo de viagem.xlsx"
 ArqNomesReservat <- "NomesReservat.csv"

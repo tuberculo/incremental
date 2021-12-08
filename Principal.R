@@ -19,7 +19,7 @@ source("Dados.R", encoding = "UTF-8") # Carrega dados e nome dos arquivos
 source("calc_incr.R", encoding = "UTF-8") # Carrega funções.
 # Lê vazões. --------------------------------------------------------------
 VazDiaria <- read_csv2(ArquivoVazoesDiarias, 
-                       locale = locale(encoding = guess_encoding(ArquivoVazoesDiarias)[[1]]))
+                       locale = locale(encoding = guess_encoding(ArquivoVazoesDiarias)[[1,1]]))
 VazDiaria$Data <- parse_date_time(VazDiaria$Data, c("mdy", "Ymd", "dmY"))
 
 VazDiaria <- pivot_longer(VazDiaria, cols = -Data, names_to = "Usina", values_to = "Vazao") # De colunas para variável
@@ -107,16 +107,16 @@ VazMensalIncrMedia <-  mutate(ungroup(VazMensalIncrMedia),
                                   Data = make_date(Ano, Mes)) 
 
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
-# Cria arquivos feather
-write_feather(VazDiariaIncr, paste0("VazIncrDiaPlexos", NomeArq, ".feather"))
-write_feather(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".feather"))
-write_feather(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".feather"))
-
 
 # Muda para um posto por coluna
 VazIncrMesPlexos <- FormatoPlexos(VazMensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
 VazIncrDiaPlexos <- FormatoPlexos(VazDiariaIncr, CascataLonga, TRUE)
 VazIncrMesPlexosMedia <- FormatoPlexos(VazMensalIncrMedia, CascataLonga, FALSE)
+
+# Cria arquivos feather
+write_feather(VazDiariaIncr, paste0("VazIncrDiaPlexos", NomeArq, ".feather"))
+write_feather(VazIncrMesPlexosMedia, paste0("VazIncrMesMediaPlexos", NomeArq, ".feather"))
+write_feather(VazIncrMesPlexos, paste0("VazIncrMesPlexos_PDE", NomeArq, ".feather"))
 
 # Cria arquivos csv
 
