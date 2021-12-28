@@ -108,6 +108,10 @@ VazMensalIncrMedia <-  mutate(ungroup(VazMensalIncrMedia),
 
 if (SubstArtificiais) NomeArq <- "Naturais" else NomeArq <- "Artificiais"
 
+VazMensalIncr <- VazMensalIncr %>% filter(Posto %in% CascataLonga$posto)
+VazDiariaIncr <- VazDiariaIncr %>% filter(Posto %in% CascataLonga$posto)
+VazMensalIncrMedia <- VazMensalIncrMedia %>% filter(Posto %in% CascataLonga$posto)
+
 # Muda para um posto por coluna
 VazIncrMesPlexos <- FormatoPlexos(VazMensalIncr, CascataLonga, FALSE) # Valores mensais a partir do arquivo vazoes.txt.
 VazIncrDiaPlexos <- FormatoPlexos(VazDiariaIncr, CascataLonga, TRUE)
