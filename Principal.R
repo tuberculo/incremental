@@ -11,7 +11,7 @@ if (!require(tidyverse)) {
   library(tidyverse)
 }
 if (!require(feather)) {
-  install.packages("tidyverse")
+  install.packages("feather")
   library(feather)
 }
 
