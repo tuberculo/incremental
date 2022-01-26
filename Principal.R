@@ -46,12 +46,12 @@ cascataPDE <- read_delim(ArquivoCascata, ";",
 cascataPDE[cascataPDE$num == 176, "num"] <- list(173) 
 
 SubstArtificiais <- TRUE ## Decide se usa vazões naturais ou artificiais
+if (SubstArtificiais) source("InsereReservat.R") # Insere reservatórios que não são representados no Newave
 #  Muda os postos de artificiais para naturais de acordo com a listagem. Aplica em todas as colunas com posto no nome.
 Nat_x_Art <- read_csv2("posto natural x artificial.csv")
 Nat_x_Art <- mutate(Nat_x_Art, NovaNatural = ifelse(Usa_sempre | SubstArtificiais, Natural, Artificial))
 cascataPDE <- mutate_at(cascataPDE, vars(contains("Posto")),
                               ~ ifelse(. %in% Nat_x_Art$Artificial, Nat_x_Art[match(., Nat_x_Art$Artificial),]$NovaNatural, .))
-if (SubstArtificiais) source("InsereReservat.R")
 
 #  Tempo de viagem
 TempoViagem <- read_xlsx(ArqTV, 1, 

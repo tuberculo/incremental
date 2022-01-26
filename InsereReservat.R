@@ -6,12 +6,13 @@
 #                   "Edgard de Souza" <- "Traição" <- "Billings + Pedreira"
 #                                        'Traição" <- "Guarapiranga"
 
-## Edgard de Souza a montante de Barra Bonita.("EDGARD DE SOUZA+TRIBUT " – posto 161)
-# cascataPDE[cascataPDE$nome == "BARRA BONITA", c("Quantos a montante?", "Posto montante 1")] <- list(1, 161) # Muda usinas a montante
-# cascataPDE <- add_row(cascataPDE, num = 107, nome = "Edgard de Souza", 
-#         posto = 161, `Quantos a montante?` = 2, `Posto jusante` = 37, # Jusante: Barra Bonita (37). Montante: Alto Tietê/Ponte Nova (160) e Traição (104)
-#         `Posto montante 1` = 160, `Posto montante 2` = 104, `Posto montante 3` = 999, 
-#         `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
+## Edgard de Souza a montante de Barra Bonita.("EDGARD DE SOUZA+TRIBUT " – posto 164)
+cascataPDE[cascataPDE$nome == "BARRA BONITA", c("Quantos a montante?", "Posto montante 1")] <- list(1, 164) # Muda usinas a montante
+cascataPDE <- add_row(cascataPDE, num = 107, nome = "Edgard de Souza", 
+                      posto = 164, `Quantos a montante?` = 0, `Posto jusante` = 37, # Jusante: Barra Bonita (37). Montante: Alto Tietê/Ponte Nova (160) e Traição (104)
+                      #`Posto montante 1` = 160, `Posto montante 2` = 104, `Posto montante 3` = 999, 
+                      `Posto montante 1` = 999, `Posto montante 2` = 999, `Posto montante 3` = 999, 
+                      `Posto montante 4` = 999, `Posto montante 5` = 999, `Posto montante 6` = 999,)
 # 
 # cascataPDE <- add_row(cascataPDE, num = 105, nome = "Alto Tietê", #Também chamado de Ponte Nova
 #                    posto = 160, `Quantos a montante?` = 0, `Posto jusante` = 161, # Jusante: Edgard de Souza (161). Montante: nada
