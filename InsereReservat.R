@@ -67,3 +67,6 @@ cascataPDE <- add_row(cascataPDE, num = 34, nome = "Ilha Solteira",
 # Muda montante de Jupiá.
 cascataPDE[cascataPDE$num == 45, c("Quantos a montante?", "Posto montante 1", "Posto montante 3")] <- list(3, 243, 34)
 
+# Inclui Apertados (Rio Piquiri) como montante de Itaipu, pois não está no Newave.
+cascataPDE[cascataPDE$num == 66, c("Quantos a montante?", "Posto montante 3")] <- list(3, 578)
+cascataPDE[cascataPDE$num == 578, c("Posto jusante")] <- 66 # Atualiza jusante de Apertados (não influencia no cálculo)
